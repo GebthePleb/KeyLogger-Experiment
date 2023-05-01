@@ -144,9 +144,9 @@ class Keylogger:
    def connect(host='http://google.com'):
         try:
             urllib.request.urlopen(host)
-            return true
+            return True
         except:
-            return false
+            return False
 
         
 if __name__ == "__main__":
